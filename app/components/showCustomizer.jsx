@@ -68,7 +68,7 @@ function ShoePart({ url, name, onPartClick, texture }) {
     />
   );
 }
-//comment
+//changed vercel email
 
 // ✅ Smooth Camera Controller
 function CameraController({ selectedPart }) {
