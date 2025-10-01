@@ -1,34 +1,51 @@
 "use client";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Environment, useGLTF, useTexture } from "@react-three/drei";
-import { useState } from "react";
+import { useState, useRef, useMemo } from "react";
 import * as THREE from "three";
-import RadialMenu from "./RadialMenu"; // import radial menu
+import RadialMenu from "./RadialMenu";
 
+// ✅ Optimized ShoePart
 function ShoePart({ url, name, onPartClick, texture }) {
   const { scene } = useGLTF(url);
+  const hoverGlow = useRef(0); // target intensity
+  const meshRefs = useRef([]);
 
   const [defaultTex, customTex] = useTexture([
     "/swatches/color-4.jpg",
     texture || "/swatches/color-4.jpg",
   ]);
 
-  scene.traverse((child) => {
-    if (child.isMesh) {
-      child.renderOrder = 1;
-      child.raycast = THREE.Mesh.prototype.raycast;
+  // Apply material ONCE
+  useMemo(() => {
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        meshRefs.current.push(child);
 
-      // Instead of creating a new material each render,
-      // update the existing material maps/colors
-      if (!child.material.isMeshStandardMaterial) {
-        child.material = new THREE.MeshStandardMaterial({
-          metalness: 0.2,
-          roughness: 0.8,
-        });
+        if (!child.material.isMeshStandardMaterial) {
+          child.material = new THREE.MeshStandardMaterial({
+            metalness: 0.4,
+            roughness: 0.6,
+          });
+        }
+
+        child.material.map = texture ? customTex : null;
+        child.material.color = texture ? new THREE.Color("white") : new THREE.Color("#000000");
+        child.material.emissive = new THREE.Color("gold");
+        child.material.emissiveIntensity = 0;
       }
-      child.material.map = texture ? customTex : null;
-      child.material.color = texture ? new THREE.Color("white") : new THREE.Color("#000000");
-    }
+    });
+  }, [scene, texture, customTex]);
+
+  // Animate only emissiveIntensity smoothly
+  useFrame(() => {
+    meshRefs.current.forEach((mesh) => {
+      mesh.material.emissiveIntensity = THREE.MathUtils.lerp(
+        mesh.material.emissiveIntensity,
+        hoverGlow.current,
+        0.08
+      );
+    });
   });
 
   return (
@@ -37,19 +54,48 @@ function ShoePart({ url, name, onPartClick, texture }) {
       onPointerOver={(e) => {
         e.stopPropagation();
         document.body.style.cursor = "pointer";
+        hoverGlow.current = 0.6;
       }}
       onPointerOut={(e) => {
         e.stopPropagation();
         document.body.style.cursor = "default";
+        hoverGlow.current = 0;
       }}
       onClick={(e) => {
-        e.stopPropagation();   // <-- you forgot the ()
+        e.stopPropagation();
         onPartClick(name);
       }}
     />
   );
 }
 
+// ✅ Smooth Camera Controller
+function CameraController({ selectedPart }) {
+  const { camera } = useThree();
+
+  useFrame(() => {
+    let targetPos;
+    if (selectedPart) {
+      switch (selectedPart) {
+        case "Heel":
+          targetPos = new THREE.Vector3(2, 3, 6);
+          break;
+        case "Toe Vamp":
+          targetPos = new THREE.Vector3(0, 2, 4);
+          break;
+        default:
+          targetPos = new THREE.Vector3(6, 4, 6);
+      }
+    } else {
+      targetPos = new THREE.Vector3(10, 5, 6); // default elegant zoom
+    }
+
+    camera.position.lerp(targetPos, 0.05);
+    camera.lookAt(0, 0, 0);
+  });
+
+  return null;
+}
 
 export default function ShoeCustomizer() {
   const [selectedPart, setSelectedPart] = useState(null);
@@ -73,7 +119,7 @@ export default function ShoeCustomizer() {
 
   return (
     <div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-      <Canvas camera={{ position: [15, 5, 3], fov: 2 }} >
+      <Canvas camera={{ position: [15, 5, 3], fov: 2 }}>
         <ambientLight intensity={1} />
         <directionalLight position={[5, 5, 5]} intensity={0.3} />
         <Environment preset="city" />
@@ -89,27 +135,21 @@ export default function ShoeCustomizer() {
           <ShoePart url="/models/stitches.glb" name="Stitches" onPartClick={setSelectedPart} texture={partTextures["Stitches"]} />
         </group>
 
-        <OrbitControls 
-      enableZoom={true} 
-      enablePan={false} 
-      enableRotate={false}   // set to false if you also want to lock rotation
-    />
+        <CameraController selectedPart={selectedPart} />
+        <OrbitControls enableZoom={true} enablePan={false} enableRotate={false} />
       </Canvas>
 
-      {/* Radial Menu Overlay */}
       {selectedPart && (
-        
         <RadialMenu
           options={swatches}
           onSelect={(swatchUrl) => {
-        handleSwatchClick(swatchUrl);
-        setSelectedPart(null); // auto close after selection
-      }}
+            handleSwatchClick(swatchUrl);
+            setSelectedPart(null);
+          }}
           onClose={() => setSelectedPart(null)}
           selectedPart={selectedPart}
         />
       )}
-      
     </div>
   );
 }
