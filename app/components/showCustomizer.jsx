@@ -68,6 +68,7 @@ function ShoePart({ url, name, onPartClick, texture }) {
     />
   );
 }
+//comment
 
 // ✅ Smooth Camera Controller
 function CameraController({ selectedPart }) {
