@@ -84,6 +84,18 @@ function CameraController({ selectedPart }) {
         case "Toe Vamp":
           targetPos = new THREE.Vector3(0, 2, 4);
           break;
+        case "Heel Counter":
+          targetPos = new THREE.Vector3(0, 2, 4);
+          break;
+        case "Quarter":
+          targetPos = new THREE.Vector3(0, 2, 4);
+          break;
+        case "Laces":
+          targetPos = new THREE.Vector3(0, 2, 4);
+          break;
+        case "Sole":
+          targetPos = new THREE.Vector3(0, -12, 4);
+          break;
         default:
           targetPos = new THREE.Vector3(6, 4, 6);
       }
@@ -120,7 +132,7 @@ export default function ShoeCustomizer() {
 
   return (
     <div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-      <Canvas camera={{ position: [15, 5, 3], fov: 2 }}>
+      <Canvas camera={{ position: [15, 5, 3], fov: 3 }}>
         <ambientLight intensity={1} />
         <directionalLight position={[5, 5, 5]} intensity={0.3} />
         <Environment preset="city" />
@@ -128,10 +140,10 @@ export default function ShoeCustomizer() {
         <group>
           <ShoePart url="/models/heel.glb" name="Heel" onPartClick={setSelectedPart} texture={partTextures["Heel"]} />
           <ShoePart url="/models/sole.glb" name="Sole" onPartClick={setSelectedPart} texture={partTextures["Sole"]} />
-          <ShoePart url="/models/vamp_interior.glb" name="Vamp Interior" onPartClick={setSelectedPart} texture={partTextures["Vamp Interior"]} />
+          <ShoePart url="/models/vamp_interior.glb" name="Vamp Interior" onPartClick={setSelectedPart} position={[0, -1, 0]} texture={partTextures["Vamp Interior"]} />
           <ShoePart url="/models/laces.glb" name="Laces" onPartClick={setSelectedPart} texture={partTextures["Laces"]} />
           <ShoePart url="/models/quarter.glb" name="Quarter" onPartClick={setSelectedPart} texture={partTextures["Quarter"]} />
-          <ShoePart url="/models/toe_vamp.glb" name="Toe Vamp" onPartClick={setSelectedPart} texture={partTextures["Toe Vamp"]} />
+          <ShoePart url="/models/toe_vamp.glb" name="Toe Vamp" onPartClick={setSelectedPart} position={[0, -1, 0]} texture={partTextures["Toe Vamp"]} />
           <ShoePart url="/models/heel_counter.glb" name="Heel Counter" onPartClick={setSelectedPart} texture={partTextures["Heel Counter"]} />
           <ShoePart url="/models/stitches.glb" name="Stitches" onPartClick={setSelectedPart} texture={partTextures["Stitches"]} />
         </group>
