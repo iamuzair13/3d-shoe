@@ -61,7 +61,7 @@ export default function RadialMenu({
         if (isSwatchMenu) {
           return (
             <img
-              key={opt.url}
+              key={opt.url || i} // Use url as key, fallback to index
               src={opt.url}
               alt={opt.label}
               width="55"
@@ -80,7 +80,7 @@ export default function RadialMenu({
         // ✅ Leather Type Menu (1st step)
         return (
           <div
-            key={opt.type}
+            key={opt.type || i} // Safer key using type, fallback to index
             style={{
               ...itemStyle,
               display: "flex",

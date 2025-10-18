@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@react-three/drei": "^10.7.6",
+    "framer-motion": "^12.23.22",
     "git": "^0.1.5",
     "next": "15.5.4",
     "react": "19.1.0",
