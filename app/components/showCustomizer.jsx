@@ -239,7 +239,7 @@ export default function ShoeCustomizer() {
         height: "100vh",
         position: "relative",
         overflow: "hidden",
-        background: "#0d0d0d",
+        background: "#b4b4b4ff",
       }}
     >
       <Canvas

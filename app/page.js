@@ -8,7 +8,7 @@ import ShoeCustomizer from "./components/showCustomizer";
 
 export default function Page() {
   return (
-    <main style={{ width: "100vw", height: "100vh",}}>
+    <main style={{ width: "100vw", height: "100vh", backgroundColor:"white"}}>
       <ShoeCustomizer />
     </main>
   );
